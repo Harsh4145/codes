@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<h3>Dashboard</h3>
+	<a class="btn btn-success" href="/medicines/new">Add Medicine</a>
+</div>
+
+<div class="row">
+	<div class="col-md-6">
+		<h5>Low Stock</h5>
+		<ul class="list-group mb-4">
+			{% if low_stock %}
+				{% for m in low_stock %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<span>{{ m.name }} ({{ m.quantity }})</span>
+						<a class="btn btn-sm btn-outline-primary" href="/medicines/{{ m.id }}/tx">Record Tx</a>
+					</li>
+				{% endfor %}
+			{% else %}
+				<li class="list-group-item">No low stock items</li>
+			{% endif %}
+		</ul>
+	</div>
+	<div class="col-md-6">
+		<h5>Expiring Soon</h5>
+		<ul class="list-group mb-4">
+			{% if expiring %}
+				{% for m in expiring %}
+					<li class="list-group-item d-flex justify-content-between align-items-center">
+						<span>{{ m.name }} (expires {{ m.expiry_date }})</span>
+						<a class="btn btn-sm btn-outline-primary" href="/medicines/{{ m.id }}/edit">Edit</a>
+					</li>
+				{% endfor %}
+			{% else %}
+				<li class="list-group-item">No upcoming expiries</li>
+			{% endif %}
+		</ul>
+	</div>
+</div>
+
+<h5>All Medicines</h5>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Batch</th>
+			<th>Expiry</th>
+			<th>Qty</th>
+			<th>Price</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for m in medicines %}
+		<tr>
+			<td>{{ m.name }}</td>
+			<td>{{ m.batch_number or '-' }}</td>
+			<td>{{ m.expiry_date }}</td>
+			<td>{{ m.quantity }}</td>
+			<td>{{ m.unit_price }}</td>
+			<td class="text-nowrap">
+				<a class="btn btn-sm btn-outline-primary" href="/medicines/{{ m.id }}/tx">Record Tx</a>
+				<a class="btn btn-sm btn-outline-secondary" href="/medicines/{{ m.id }}/edit">Edit</a>
+				<form class="d-inline" method="post" action="/medicines/{{ m.id }}/delete" onsubmit="return confirm('Delete this medicine?')">
+					<button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+				</form>
+			</td>
+		</tr>
+		{% else %}
+		<tr><td colspan="6" class="text-center">No medicines yet</td></tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock %}
